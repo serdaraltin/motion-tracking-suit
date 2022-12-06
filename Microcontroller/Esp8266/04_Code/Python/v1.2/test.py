@@ -1,0 +1,45 @@
+import time
+import json
+from machine import I2C, Pin
+from wireless.wifi import WIFI
+from wireless.udp import UDP
+from sensors.mpu6050_pure import MPU6050
+
+#configuring i2c
+i2c = I2C(scl=Pin(5), sda=Pin(4))
+
+#configuring onboard led
+led = Pin(2, Pin.OUT)
+
+#configuring mpu
+mpu = MPU6050(i2c)
+
+#configuring wifi
+wifi =  WIFI()
+
+#configuring udp
+udp = UDP()
+
+
+#connecting wlan
+print("SSID: ",wifi.ssid)
+wlan = wifi.connect
+print("Wlan connecting...")
+
+# while wlan.isconnected() != True:
+# 	led.value(0)
+# 	time.sleep(.5)
+# 	led.value(1)
+# 	time.sleep(.5)
+# 	wlan = wifi.connect
+
+print("Wlan connected.")
+led_value = True
+while True:
+    led(led_value)
+    led_value = not led_value
+    message = "{}".format(json.dumps(mpu.get_values))
+    print("IP: {}\tPort: {}\tMessage: {}".format(udp.ip,udp.port,message))
+    udp.send_message(message)
+    time.sleep(1)
+

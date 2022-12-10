@@ -108,7 +108,7 @@ void udpSend(String message, int delay_ms)
     Udp.beginPacket(udp_ip, udp_port);
     Udp.write(message.c_str());
     Udp.endPacket();
-    // Serial.printf("Sending packet: %s\n", message.c_str());
+    Serial.printf("Sending packet: %s\n", message.c_str());
     delay(delay_ms);
 }
 
@@ -284,14 +284,6 @@ void updateMPU6050()
     accX = a.acceleration.x;
     accY = a.acceleration.y;
     accZ = a.acceleration.z;
-    Serial.print(accX);
-    Serial.print("\t");
-
-    Serial.print(accY);
-    Serial.print("\t");
-
-    Serial.print(accZ);
-    Serial.print("\n");
 
     tempRaw = temp.temperature;
 
@@ -309,11 +301,11 @@ void updateHMC5883L()
     magY = event.magnetic.y;
     magZ = event.magnetic.z;
 
-    /* Serial.print(magX);
-     Serial.print("\t");
-     Serial.print(magY);
-     Serial.print("\t");
-     Serial.println(magZ);*/
+    Serial.print(magX);
+    Serial.print("\t");
+    Serial.print(magY);
+    Serial.print("\t");
+    Serial.println(magZ);
 }
 
 void updatePitchRoll()

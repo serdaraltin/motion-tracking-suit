@@ -1,4 +1,5 @@
 import bpy
+
 bl_info = {
     "name": "Sermotions",
     "author": "Serdar Eyüp ALTIN",

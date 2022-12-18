@@ -10,11 +10,9 @@
 // Sensor Configuring
 Adafruit_MPU6050 mpu6050;
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
-
 #define RESTRICT_PITCH
 
 Kalman kalmanX, kalmanY, kalmanZ; // Create the Kalman instances
-const uint8_t MPU6050 = 0x68;     // If AD0 is logic low on the PCB the address is 0x68, otherwise set this to 0x69
 const uint8_t HMC5883L = 0x1E;    // Address of magnetometer
 /* IMU Data */
 double accX, accY, accZ;
@@ -359,11 +357,11 @@ void updateHMC5883L()
     magY = event.magnetic.y;
     magZ = event.magnetic.z;
 
-    // Serial.print(magX);
-    // Serial.print("\t");
-    // Serial.print(magY);
-    // Serial.print("\t");
-    // Serial.println(magZ);
+    Serial.print(magX);
+    Serial.print("\t");
+    Serial.print(magY);
+    Serial.print("\t");
+    Serial.println(magZ);
 }
 
 void updatePitchRoll()
@@ -397,30 +395,14 @@ void updateYaw()
 
 void calibrateMag()
 {
-    Wire.beginTransmission(HMC5883L);
-    Wire.write(0x00);
-    Wire.write(0x11);
-    Wire.endTransmission();
-
-    delay(100);       // Wait for sensor to get ready
     updateHMC5883L(); // Read positive bias values
 
-    int16_t magPosOff[3] = {magX, magY, magZ};
-
-    Wire.beginTransmission(HMC5883L);
-    Wire.write(0x00);
-    Wire.write(0x12);
-    Wire.endTransmission();
+    double magPosOff[3] = {magX, magY, magZ};
 
     delay(100);       // Wait for sensor to get ready
     updateHMC5883L(); // Read negative bias values
 
-    int16_t magNegOff[3] = {magX, magY, magZ};
-
-    Wire.beginTransmission(HMC5883L);
-    Wire.write(0x00);
-    Wire.write(0x10);
-    Wire.endTransmission();
+    double magNegOff[3] = {magX, magY, magZ};
 
     magGain[0] = -2500 / float(magNegOff[0] - magPosOff[0]);
     magGain[1] = -2500 / float(magNegOff[1] - magPosOff[1]);

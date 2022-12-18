@@ -51,6 +51,7 @@ int udp_port = 4455;
 bool send_json = true;
 
 // Prototype defination
+void i2cScan();
 void wifiSetup(char const *_ssid = ssid, char const *_password = password);
 void udpSetup(int _udp_port = udp_port, bool test = false);
 void udpSend(String _message = "test", int _delay_ms = 10);
@@ -67,20 +68,59 @@ String sensorGetJson();
 // Setup  event
 void setup()
 {
-    Serial.begin(115200);
     Wire.begin();
-
-    calibrateMag();
-
-    sensorSetup();
+    Serial.begin(115200);
     wifiSetup();
     udpSetup();
+    sensorSetup();
 }
 // Loop event
 void loop()
 {
     udpSend(sensorGetJson());
-    delay(100);
+    delay(50);
+}
+
+void i2cScan()
+{
+    byte error, address;
+    int nDevices;
+
+    Serial.println("Scanning...");
+
+    nDevices = 0;
+    for (address = 1; address < 127; address++)
+    {
+        // The i2c_scanner uses the return value of
+        // the Write.endTransmisstion to see if
+        // a device did acknowledge to the address.
+        Wire.beginTransmission(address);
+        error = Wire.endTransmission();
+
+        if (error == 0)
+        {
+            Serial.print("I2C device found at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.print(address, HEX);
+            Serial.println("  !");
+
+            nDevices++;
+        }
+        else if (error == 4)
+        {
+            Serial.print("Unknown error at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.println(address, HEX);
+        }
+    }
+    if (nDevices == 0)
+        Serial.println("No I2C devices found\n");
+    else
+        Serial.println("done\n");
+
+    delay(5000);
 }
 // Configuration of wireless
 void wifiSetup(char const *_ssid, char const *_password)
@@ -138,6 +178,23 @@ void sensorSetup(int _loop_delay)
     Serial.printf("Mpu6050 found.\n");
 
     Serial.printf("HMC5883 starting\n");
+
+    Wire.beginTransmission(0x68);
+    Wire.write(0x37);
+    Wire.write(0x02);
+    Wire.endTransmission();
+
+    Wire.beginTransmission(0x68);
+    Wire.write(0x6A);
+    Wire.write(0x00);
+    Wire.endTransmission();
+
+    // Disable Sleep Mode
+    Wire.beginTransmission(0x68);
+    Wire.write(0x6B);
+    Wire.write(0x00);
+    Wire.endTransmission();
+
     while (!mag.begin())
     {
         delay(_loop_delay);
@@ -150,6 +207,7 @@ void sensorSetup(int _loop_delay)
     mpu6050.setInterruptPinLatch(true);
     mpu6050.setInterruptPinPolarity(true);
     mpu6050.setMotionInterrupt(true);
+    Serial.print("Mpu6050 configured.\n");
 
     calibrateMag();
     delay(100); // Wait for sensors to stabilize
@@ -173,8 +231,6 @@ void sensorSetup(int _loop_delay)
     compAngleZ = yaw;
 
     timer = micros(); // Initialize the timer
-
-    Serial.print("Mpu6050 configured.\n");
 }
 
 void updateSensor()

@@ -1,6 +1,8 @@
 import bpy
 import json
 import os
+import socket
+import multiprocessing
 
 bl_info = {
     "name": "Sermotions",
@@ -91,13 +93,31 @@ class Config(object):
 
     def read(self):
         if os.path.exists(self.config_file) == False or open(self.config_file, "r").read() == "":
-            self.config_write(self)
+            self.write()
         with open(self.config_file, "r") as openfile:
             self.config = json.load(openfile)
         return repr(self.config)
 
 
 config = Config()
+
+
+def setup_udp_server(ip=config.server.ip, port=config.server.port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind((ip, int(port)))
+    print('Connection waiting....')
+    while True:
+        data, addr = sock.recvfrom(1024)
+        sock.sendto(data, addr)
+        print("Received:", data, 'from', addr)
+
+
+def create_process_server():
+    return multiprocessing.Process(target=setup_udp_server)
+
+
+proc_server = create_process_server()
 
 
 class SERMOTIONS_PT_main(bpy.types.Panel):
@@ -185,8 +205,7 @@ class SERMOTIONS_PT_server(SERMOTIONS_PT_main, bpy.types.Panel):
         layout.prop(props, "port")
 
         box = layout.box()
-        box.label(text="{info}".format(
-            info=info), icon='INFO')
+        box.label(text="{info}".format(info=info), icon='INFO')
 
         row = layout.row()
         col = row.column()
@@ -206,6 +225,7 @@ class SERMOTIONS_PT_server(SERMOTIONS_PT_main, bpy.types.Panel):
         bl_label = "Save"
         bl_idname = "sermotions.save"
 
+        # Server Save button event
         def execute(self, context):
             config.write()
             SERMOTIONS_PT_server.status_print(
@@ -216,9 +236,17 @@ class SERMOTIONS_PT_server(SERMOTIONS_PT_main, bpy.types.Panel):
         bl_label = "Start"
         bl_idname = "sermotions.start"
 
+        # Server Start button event
         def execute(self, context):
-            SERMOTIONS_PT_server.status_print(
-                self, "start button test")
+
+            global proc_server
+            if not proc_server.is_alive():
+                proc_server.start()
+                SERMOTIONS_PT_server.status_print(self, "Server started.")
+            else:
+                proc_server.terminate()
+                SERMOTIONS_PT_server.status_print(self, "Server stopped.")
+                proc_server = create_process_server()
             return {"FINISHED"}
 
 

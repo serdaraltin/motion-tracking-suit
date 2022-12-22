@@ -57,6 +57,7 @@ void i2cScan();
 void wifiSetup(char const *_ssid = ssid, char const *_password = password);
 void udpSetup(int _udp_port = udp_port, bool test = false);
 void udpSend(String _message = "test", int _delay_ms = 10);
+void calculateAxis(int *axis);
 void calibrateMag();
 void sensorSetup(int _loop_delay = 10);
 void updateSensor();
@@ -64,7 +65,6 @@ void updateYaw();
 void updatePitchRoll();
 void updateMPU6050();
 void updateHMC5883L();
-
 String sensorGetJson();
 
 // Setup  event
@@ -160,14 +160,34 @@ String sensorGetJson()
     StaticJsonDocument<1024> static_json_document;
 
     // Get acceleration values
-    static_json_document["roll"] = roll;
-    static_json_document["pitch"] = pitch;
-    static_json_document["yaw"] = yaw;
+    int axis[3] = {roll, pitch, yaw};
+    calculateAxis(axis);
+    static_json_document["roll"] = axis[0];
+    static_json_document["pitch"] = axis[1];
+    static_json_document["yaw"] = axis[2];
 
     char doc_buffer[1024];
     serializeJson(static_json_document, doc_buffer);
 
     return String(doc_buffer);
+}
+
+void calculateAxis(int *axis)
+{
+    if (roll < 0)
+    {
+        axis[0] = 180 + (180 - abs(roll));
+    }
+    if (pitch < 0)
+    {
+        axis[1] = 180 + (180 - abs(pitch));
+    }
+    if (yaw < 0)
+    {
+        axis[2] = 180 + (180 - abs(yaw));
+    }
+
+    return;
 }
 
 void sensorSetup(int _loop_delay)

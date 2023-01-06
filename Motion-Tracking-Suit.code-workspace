@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "Engine/Blender/06_Plugin/Sermotions"
+		},
+		{
+			"name": "mpu6050_wifi_udp",
+			"path": "Microcontroller/Esp8266/04_Code/Cpp/mpu6050_wifi_udp"
+		}
+	],
+	"settings": {}
+}

@@ -4,6 +4,7 @@ import os
 import socket
 import multiprocessing
 
+
 bl_info = {
     "name": "Sermotions",
     "author": "Serdar Eyüp ALTIN",
@@ -102,22 +103,24 @@ class Config(object):
 config = Config()
 
 
-def setup_udp_server(ip=config.server.ip, port=config.server.port):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind((ip, int(port)))
-    print('Connection waiting....')
-    while True:
-        data, addr = sock.recvfrom(1024)
-        sock.sendto(data, addr)
-        print("Received:", data, 'from', addr)
+class UDP_Server(object):
 
+    def __init__(self) -> None:
+        pass
 
-def create_process_server():
-    return multiprocessing.Process(target=setup_udp_server)
+    def setup(ip=config.server.ip, port=config.server.port):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind((ip, int(port)))
+        print('Connection waiting....')
+        while True:
+            data, addr = sock.recvfrom(1024)
+            sock.sendto(data, addr)
+            print("Received:", data, 'from', addr)
 
-
-proc_server = create_process_server()
+    @property
+    def create_process():
+        return multiprocessing.Process(target=setup)
 
 
 class SERMOTIONS_PT_main(bpy.types.Panel):
@@ -243,10 +246,12 @@ class SERMOTIONS_PT_server(SERMOTIONS_PT_main, bpy.types.Panel):
             if not proc_server.is_alive():
                 proc_server.start()
                 SERMOTIONS_PT_server.status_print(self, "Server started.")
+                print_debug("UDP server started.")
             else:
                 proc_server.terminate()
                 SERMOTIONS_PT_server.status_print(self, "Server stopped.")
                 proc_server = create_process_server()
+                print_debug("UDP server stopped.")
             return {"FINISHED"}
 
 
@@ -268,11 +273,18 @@ def unregister():
         bpy.utils.unregister_class(cls)
 
 
-def print_debug(_context="", _type="Info"):
-    print("{type}: {datetime} {context}".format(
-        type=_type,
-        datetime="-",
-        context=_context
+def now():
+    from datetime import datetime
+    now = datetime.now()
+    return now.strftime("%Y/%m/%d %H:%M:%S")
+
+
+def print_debug(context="", type="Info"):
+
+    print("{datetime} {type}: {context}".format(
+        type=type,
+        datetime="["+now()+"]",
+        context=context
     ))
 
 

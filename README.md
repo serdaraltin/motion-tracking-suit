@@ -447,6 +447,6 @@ We would like to express our gratitude to all contributors and collaborators who
 This project is licensed under the [MIT License](LICENSE.md).
 
 ### 10.4 Contact Information
-For any inquiries or assistance, feel free to contact us at [contact@example.com](mailto:seyupaltin@gmail.com).
+For any inquiries or assistance, feel free to contact us at [seyupaltin@gmail.com](mailto:seyupaltin@gmail.com).
 
 ---

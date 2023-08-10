@@ -1,7 +1,3 @@
-Certainly! Here's the complete documentation for the Motion Tracking Suit project with designated areas for adding screenshots for each section:
-
----
-
 # Motion Tracking Suit Project Documentation
 
 ## Table of Contents

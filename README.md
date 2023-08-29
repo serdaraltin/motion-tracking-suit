@@ -1,7 +1,3 @@
-Certainly! Here's the complete documentation for the Motion Tracking Suit project with designated areas for adding screenshots for each section:
-
----
-
 # Motion Tracking Suit Project Documentation
 
 ## Table of Contents
@@ -448,9 +444,9 @@ The Motion Tracking Suit project offers a comprehensive solution for real-time m
 We would like to express our gratitude to all contributors and collaborators who made this project possible.
 
 ### 10.3 License
-This project is licensed under the [MIT License](LICENSE.md).
+This project is licensed under the [MIT License](LICENSE).
 
 ### 10.4 Contact Information
-For any inquiries or assistance, feel free to contact us at [contact@example.com](mailto:contact@example.com).
+For any inquiries or assistance, feel free to contact us at [seyupaltin@gmail.com](mailto:seyupaltin@gmail.com).
 
 ---

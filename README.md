@@ -49,7 +49,12 @@
 
 ### 1.1 Overview
 The Motion Tracking Suit project is a comprehensive system designed to track real-time motion using Arduino-based sensors and visualize the data in Blender and Unreal Engine. The project offers a versatile solution for motion tracking that finds applications in fields like animation, game development, and virtual reality experiences.
-![Breadboard](pcb/breadboard.png "Breadboard")
+
+Breadboard Schema             |  Breadboard Montage
+:-------------------------:|:-------------------------:
+ <img src="pcb/breadboard.png" width=300px> |  <img src="images/circuit/mini_nodemcu_breadboard_test.jpg" width=300px>
+
+
 ### 1.2 Project Components
 The project comprises three main components:
 

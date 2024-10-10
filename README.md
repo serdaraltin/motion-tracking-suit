@@ -1,4 +1,4 @@
-# Motion Tracking Suit Project Documentation
+# Motion Tracking Suit
 
 ## Table of Contents
 1. [Introduction](#introduction)
